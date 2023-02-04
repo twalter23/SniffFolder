@@ -1,35 +1,93 @@
 
-import os
-import shutil
+import os, shutil, time
 from pathlib import Path
-import time 
 
-def check(string, char):
 
+#############################################################################
+#                                  Check                                    #
+#############################################################################
+def Check(string, char):#Check si char est contenu dans string
     if char in string:
         result=True
     else:
         result=False
     return result
 
+#############################################################################
+#                    ListMissingFilesInFoldAButInFoldB                      #
+#############################################################################
+def ListMissingFilesInFoldAButInFoldB(FoldAPath,FoldBPath):
 
-# Driver Code
-s = "Folder.txt"
-char = '.'
+   files_A = set([f for f in os.listdir(FoldAPath) if f.endswith('.pdf')])
+   files_B = set([f for f in os.listdir(FoldBPath) if f.endswith('.pdf')])
 
-OriginFolder = Path(input("Folder to be monitored\n")) # Path("C:/Users/Floryna/Desktop/Thomas/essai_python/origin") 
-DestinationFolder = Path(input("Saving folder\n")) #Path("C:/Users/Floryna/Desktop/Thomas/essai_python/destination") 
+   files_only_in_B = files_B - files_A
+
+   return files_only_in_B
+
+#############################################################################
+#                CopyFilesListFromAToBifNotInB                              #
+#############################################################################
+def CopyFilesListFromAToBifNotInB(FolderA,FolderB,FilesList):
+
+   files_B = set(os.listdir(FolderB))
+
+   for pdf_file in FilesList:
+      if pdf_file not in files_B:
+         src = os.path.join(FolderA, pdf_file)
+         dst = os.path.join(FolderB, pdf_file)
+         shutil.copy2(src, dst)
+
+#############################################################################
+#                          CopyPdfFromAinBnotInB                            #
+#############################################################################
+def CopyPdfFromAinBnotInB(APath,BPath):
+   Copiedfiles = 0
+
+   files_a = set([f for f in os.listdir(APath) if f.endswith('.pdf')])
+   files_b = set([f for f in os.listdir(BPath) if f.endswith('.pdf')])
+
+   files_only_in_a = files_a - files_b
+
+   for file in files_only_in_a:
+      src = os.path.join(APath, file)
+      dst = os.path.join(BPath, file)
+      shutil.copy2(src, dst)
+
+#############################################################################
+#                                Extract                                    #
+#############################################################################
+def Extract(SniffedFolderPath,DestinationFolderPath,ExtractFolderPath):
+   global ExtractFolder
+
+   print("******Extracting*********")
+   DisappearedFiles = ListMissingFilesInFoldAButInFoldB(SniffedFolderPath,DestinationFolderPath)
+   print(DisappearedFiles)
+   CopyFilesListFromAToBifNotInB(DestinationFolderPath,ExtractFolderPath,DisappearedFiles)
+
+#############################################################################
+#                                  main                                    #
+#############################################################################
+SniffedFolderPath = "E:\\11-Projets_Soft\\Python\\SniffFolder\\Sniffed"
+DestinationFolderPath = "E:\\11-Projets_Soft\\Python\\SniffFolder\\destination"
+ExtractFolderPath ="E:\\11-Projets_Soft\\Python\\SniffFolder\\destination\\Extract"
+
+Resfresh_Read_s = 5 #The time we wait before checking folder
+Refresh_Extract_s = 6 #The time we wait before extracting
+Readings = 0
+
+start_time = time.time()
 
 while(1):
-   OriginFilesList = os.listdir(OriginFolder)
-   DestinationFilesList = os.listdir(DestinationFolder)
 
-   for file_name in OriginFilesList:
-      if (check(file_name,'.') is True):#Pour ne copier que les fichiers: personne ne met des . dans les noms de dossier ?!?
-         if(not(file_name in DestinationFilesList)):#Si le fichier d'origine n'est pas dans la liste des fichiers du dossier de destination
-            shutil.copy(os.path.join(OriginFolder,file_name), os.path.join(DestinationFolder,file_name))
-            print("Copied file:\n",file_name)
-         else:
-            print("No new file to copy\n")
-         time.sleep(1)
+   print("iteration :",Readings)
+   CopyPdfFromAinBnotInB(SniffedFolderPath,DestinationFolderPath)
+   Readings+=1
+
+   time.sleep(Resfresh_Read_s)
+
+   if((time.time() - start_time) >= Refresh_Extract_s):
+      Extract(SniffedFolderPath,DestinationFolderPath,ExtractFolderPath)
+      start_time = time.time()
+
 
