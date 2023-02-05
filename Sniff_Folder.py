@@ -55,6 +55,65 @@ def CopyPdfFromAinBnotInB(APath,BPath):
       shutil.copy2(src, dst)
 
 #############################################################################
+#                          RenameUniqueDisappearedFiles                     #
+#############################################################################
+def RenameUniqueDisappearedFiles(FilesList, FolderPath):
+
+   newFilesList = []
+   if FilesList is not None:
+
+      for filename in FilesList:
+         # Compose the full file path
+         file_path = os.path.join(FolderPath, filename)
+
+         # Get the current timestamp
+         timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+         # Compose the new file name
+         new_filename = "{}_{}".format(timestamp, filename)
+         new_file_path = os.path.join(FolderPath, new_filename)
+
+         # Rename the file
+         os.rename(file_path, new_file_path)
+
+         # Add the newly renamed file to the list of new files
+         newFilesList.append(new_filename)
+
+      return newFilesList
+
+#############################################################################
+#                             CopyFilesFolderAtoB                           #
+#############################################################################
+def CopyFilesFolderAtoB(FilesList,FoldAPath,FoldBPath):
+
+   print(FoldAPath)
+   print(FoldBPath)
+
+   if FilesList is not None:
+      for filename in FilesList:
+         # Compose the source and destination file paths
+         src_file = os.path.join(FoldAPath, filename)
+         dst_file = os.path.join(FoldBPath, filename)
+
+         print(src_file)
+
+         # Copy the file
+         shutil.copy2(src_file, dst_file)
+
+#############################################################################
+#                             DeleteFilesFolderA                           #
+#############################################################################
+def DeleteFilesFolderA(FilesList,FoldPath):  
+
+   if FilesList is not None:
+      for filename in FilesList:
+         # Compose the full file path
+         file_path = os.path.join(FoldPath, filename)
+
+         # Delete the file
+         os.remove(file_path)
+
+#############################################################################
 #                                Extract                                    #
 #############################################################################
 def Extract(SniffedFolderPath,DestinationFolderPath,ExtractFolderPath):
@@ -63,7 +122,9 @@ def Extract(SniffedFolderPath,DestinationFolderPath,ExtractFolderPath):
    print("******Extracting*********")
    DisappearedFiles = ListMissingFilesInFoldAButInFoldB(SniffedFolderPath,DestinationFolderPath)
    print(DisappearedFiles)
-   CopyFilesListFromAToBifNotInB(DestinationFolderPath,ExtractFolderPath,DisappearedFiles)
+   ModifiedList = RenameUniqueDisappearedFiles(DisappearedFiles,DestinationFolderPath)
+   CopyFilesFolderAtoB(ModifiedList, DestinationFolderPath, ExtractFolderPath)
+   DeleteFilesFolderA(ModifiedList, DestinationFolderPath)
 
 #############################################################################
 #                                  main                                    #
