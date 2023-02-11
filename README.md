@@ -10,4 +10,5 @@ For final user, interesting files are then stored in ExtractFolderPath. Destinat
 
 only needed for good working of the script.
 
-![Doc](https://user-images.githubusercontent.com/114344089/218246687-60781f2b-859b-4d5e-9893-68efbb86e9db.PNG)
+
+![Readme](https://user-images.githubusercontent.com/114344089/218250689-70125a1a-a02d-4d6b-be75-2869d647634b.PNG)
