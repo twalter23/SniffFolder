@@ -1,6 +1,13 @@
 # SniffFolder
 
-Code that endlessly monitors the content of the files of two folders :
-OriginFolder and DestinationFolder.
+Code that monitors the content of a folder with the directory variable SniffedFolderPath variable.
 
-If OriginFolder contains a file that DestinationFolder does not already contains, it makes a copy of the file to DestinationFolder
+If a new pdf file arrives it makes a copy to DestinationFolderPath variable.
+
+If the newly arrived pdf in SniffedFolderPath is deleted, a copy of it is made in ExtractFolderPath.
+
+For final user, interesting files are then stored in ExtractFolderPath. DestinationFolderPath is 
+
+only needed for good working of the script.
+
+![PinMaker Doc](Doc/Doc.png "Doc")
